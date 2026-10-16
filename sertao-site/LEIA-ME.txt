@@ -1,0 +1,50 @@
+SERTÃO IMOBILIÁRIA — SITE PARA O NETLIFY
+========================================
+
+O que tem nesta pasta
+- index.html ............ o site (clientes) e o painel do corretor
+- logo.png .............. logo da Sertão
+- netlify/functions/api.mjs  servidor: guarda imóveis, fotos e contagem de acessos
+- netlify.toml / package.json  configuração para o Netlify
+
+COMO PUBLICAR (sem usar terminal)
+1. Crie uma conta grátis em github.com.
+2. Clique em "New repository", nome: sertao-imobiliaria, e crie.
+3. Clique em "uploading an existing file" e arraste TODOS os arquivos e a
+   pasta "netlify" desta pasta (não arraste a pasta de fora). Clique em
+   "Commit changes".
+4. Entre em app.netlify.com (pode entrar com a conta do GitHub).
+   "Add new project" > "Import an existing project" > GitHub >
+   escolha sertao-imobiliaria > "Deploy".
+5. Crie a SENHA do painel:
+   Project configuration > Environment variables > Add a variable
+   Key: ADMIN_SENHA     Value: (sua senha, forte)
+   Depois vá em Deploys > Trigger deploy > Deploy project.
+6. Para o endereço ficar sertaoimobiliaria.netlify.app:
+   Project configuration > Change project name > sertaoimobiliaria
+
+ATENÇÃO: não use "arrastar a pasta" (Netlify Drop). Esse jeito publica só a
+página, sem o servidor, e o painel e o contador não funcionam.
+
+COMO USAR
+- Site dos clientes: https://sertaoimobiliaria.netlify.app
+- Painel do corretor: https://sertaoimobiliaria.netlify.app/#admin
+  (entre com a senha ADMIN_SENHA)
+- No painel:
+  Imóveis ........ cadastrar, editar, fotos, marcar alugado/vendido,
+                   anunciar de novo, copiar link de cada casa
+  Acessos ........ pessoas no site, quantas abriram cada casa e quantas
+                   tocaram em "Marcar visita" (7 dias, 30 dias, total)
+  Marca e WhatsApp  nome, logo e número que recebe os pedidos
+- PRIMEIRA COISA: em "Marca e WhatsApp", coloque o seu número.
+- Os 8 imóveis marcados "Exemplo" podem ser apagados.
+
+COLOCAR O APP NA TELA DO CELULAR
+- Android (Chrome): abra o site > menu ⋮ > "Adicionar à tela inicial".
+- iPhone (Safari): abra o site > botão Compartilhar > "Adicionar à Tela de Início".
+- No app instalado, o corretor entra no painel pelo botão "Painel" no topo
+  (aparece depois do primeiro login em /#admin).
+
+Como a contagem funciona
+- Cada pessoa conta uma vez por dia em cada casa.
+- Os acessos do próprio corretor (aparelho que entrou no painel) não contam.

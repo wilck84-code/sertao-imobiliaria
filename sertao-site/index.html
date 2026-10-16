@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sertão Imobiliária</title>
+<meta name="description" content="Casas para alugar e comprar. Veja as fotos e marque sua visita pelo WhatsApp.">
+<meta property="og:title" content="Sertão Imobiliária">
+<meta property="og:description" content="Casas para alugar e comprar. Veja as fotos e marque sua visita pelo WhatsApp.">
+<meta name="theme-color" content="#1B3D75">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Sertão">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+
+/* Layout: site de catálogo — abas Comprar/Alugar, grade de cartões com foto e botão de visita; ficha com galeria; painel do corretor em /#admin */
+:root{
+  --bg:#F3F5F9; --surface:#FFFFFF; --ink:#16213A; --muted:#59647A; --line:#D9DFEA;
+  --accent:#1B3D75; --accent-ink:#FFFFFF; --sun:#C8383C; --sun-ink:#FFFFFF; --logo-bg:transparent;
+  --chip:#E5EAF3; --wa:#1A9B4F; --wa-ink:#FFFFFF; --warn:#9A6400; --warn-bg:#FBF0D9; --bad:#B23A2E;
+  --shadow:0 1px 2px rgba(20,40,30,.06),0 6px 20px rgba(20,40,30,.06);
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1320; --surface:#161D2E; --ink:#E6EAF2; --muted:#9AA5BC; --line:#283146;
+  --accent:#7FA6EE; --accent-ink:#0B1222; --sun:#F07A72; --sun-ink:#1A0A0A; --chip:#1F2840; --logo-bg:#FFFFFF;
+  --wa:#25B860; --wa-ink:#06120A; --warn:#F0C060; --warn-bg:#3A2E14; --bad:#F08A7E;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1320; --surface:#161D2E; --ink:#E6EAF2; --muted:#9AA5BC; --line:#283146;
+  --accent:#7FA6EE; --accent-ink:#0B1222; --sun:#F07A72; --sun-ink:#1A0A0A; --chip:#1F2840; --logo-bg:#FFFFFF;
+  --wa:#25B860; --wa-ink:#06120A; --warn:#F0C060; --warn-bg:#3A2E14; --bad:#F08A7E;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1120px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;background:none;border:0;color:var(--ink);cursor:pointer;padding:0}
+.logo svg{width:32px;height:32px}
+.logo-img{height:50px;width:auto;max-width:180px;object-fit:contain;display:block;background:var(--logo-bg);border-radius:8px;padding:2px 4px}
+.marca-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.marca-prev{width:140px;height:90px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;background:#FFFFFF;padding:8px;flex:0 0 auto}
+.marca-prev .logo-img{max-height:70px;height:auto;max-width:100%}
+.marca-prev svg{width:52px;height:52px}
+.tabs{margin-left:auto;display:flex;background:var(--chip);border-radius:999px;padding:4px}
+.tabs button{border:0;background:none;color:var(--muted);font:600 14px var(--body);padding:8px 16px;border-radius:999px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.owner-btn{border:1px solid var(--accent);background:var(--surface);color:var(--accent);font:700 13px var(--body);padding:8px 14px;border-radius:999px;cursor:pointer}
+.owner-btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.intro{padding-block:28px 8px}
+.intro h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0 0 6px;text-wrap:balance;letter-spacing:-.02em}
+.intro p{margin:0;color:var(--muted);max-width:62ch}
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding-block:16px}
+.filters select{font:500 14px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 12px;width:auto}
+.count{color:var(--muted);font-size:13px;align-self:center;margin-left:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .15s}
+.card:hover{transform:translateY(-2px)}
+.card-open{border:0;padding:0;background:none;text-align:left;color:inherit;font:inherit;cursor:pointer;display:flex;flex-direction:column;flex:1}
+.card-wa{margin:0 16px 16px;width:auto}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.ph{position:relative;aspect-ratio:4/3;max-width:100%;background:var(--chip);overflow:hidden}
+.ph svg,.ph img{display:block;width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;top:10px;left:10px;font:700 11px var(--body);letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:6px;background:var(--surface);color:var(--ink)}
+.nphotos{position:absolute;bottom:10px;right:10px;font:600 12px var(--body);padding:3px 8px;border-radius:6px;background:rgba(0,0,0,.55);color:#fff}
+.cbody{padding:14px 16px 12px;display:grid;gap:6px;width:100%}
+.price{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.price small{font:500 13px var(--body);color:var(--muted)}
+.ttl{font-weight:600}
+.loc{color:var(--muted);font-size:13px}
+.pin{color:var(--accent);font-weight:600}
+.specs{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+.specs b{color:var(--ink);font-weight:700}
+.empty{padding:40px 0;color:var(--muted);text-align:center}
+footer{color:var(--muted);font-size:13px;padding-top:32px}
+
+/* Ficha */
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(8,14,11,.55);display:flex;justify-content:center;align-items:flex-end;padding-top:env(safe-area-inset-top,0px)}
+@media(min-width:760px){.overlay{align-items:center;padding:24px}}
+.sheet{background:var(--surface);width:100%;max-width:900px;max-height:100%;overflow:auto;border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(min-width:760px){.sheet{border-radius:20px;max-height:92vh}}
+.gal{position:relative;background:#000;aspect-ratio:16/10;max-width:100%}
+.gal svg{width:100%;height:100%;display:block}
+.gal img{width:100%;height:100%;display:block;object-fit:contain}
+.gal .nav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#18261F;font-size:22px;cursor:pointer;display:grid;place-items:center}
+.gal .prev{left:10px}.gal .next{right:10px}
+.gal .close{position:absolute;top:10px;right:10px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:999px;padding:7px 14px;font:600 13px var(--body);cursor:pointer}
+.gal .room{position:absolute;bottom:10px;left:10px;font:600 12px var(--body);color:#fff;background:rgba(0,0,0,.55);padding:4px 10px;border-radius:6px}
+.thumbs{display:flex;gap:8px;padding:10px 16px;overflow-x:auto}
+.thumbs button{flex:0 0 84px;aspect-ratio:4/3;border-radius:8px;overflow:hidden;border:2px solid transparent;padding:0;cursor:pointer;background:var(--chip)}
+.thumbs button[aria-current="true"]{border-color:var(--accent)}
+.thumbs svg,.thumbs img{width:100%;height:100%;display:block;object-fit:cover}
+.info{padding:8px 20px 24px;display:grid;gap:20px}
+@media(min-width:760px){.info{grid-template-columns:1fr 300px;align-items:start}}
+.info > *{min-width:0}
+.info h2{font-family:var(--display);font-size:24px;font-weight:800;margin:4px 0;letter-spacing:-.01em;text-wrap:balance}
+.code{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.facts div{background:var(--chip);border-radius:10px;padding:10px 4px;text-align:center}
+.facts b{display:block;font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}
+.facts span{font-size:12px;color:var(--muted)}
+.desc{max-width:62ch;margin:0;white-space:pre-line}
+.extras{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding:0;list-style:none}
+.extras li{font-size:12px;background:var(--chip);border-radius:999px;padding:4px 10px}
+.gps{margin-top:18px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.gps-head{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--chip)}
+.gps-head svg{flex:0 0 36px;width:36px;height:36px}
+.gps-head > div{min-width:0;flex:1}
+.gps-head b{display:block;font-size:14px}
+.coords{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;user-select:all}
+.gps-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+.gps-btns a{background:var(--surface);color:var(--accent);text-decoration:none;text-align:center;font:700 13px var(--body);padding:11px 6px}
+.gps-btns a:hover{background:var(--chip)}
+.visit{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:10px}
+.visit h3{margin:0;font-family:var(--display);font-size:19px;font-weight:800}
+@media(min-width:760px){.visit{position:sticky;top:12px}}
+
+/* botões e campos */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;border:0;border-radius:12px;padding:13px 16px;font:700 15px var(--body);cursor:pointer;text-decoration:none;width:100%}
+.btn svg{width:20px;height:20px;flex:0 0 20px}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.wa{background:var(--wa);color:var(--wa-ink)}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn.sm{padding:10px 14px;font-size:14px;width:auto}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.mini{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 10px;font:600 12px var(--body);cursor:pointer;text-decoration:none;display:inline-block}
+.mini.danger{color:var(--bad)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.err{color:var(--bad);font-size:13px;margin:0;font-weight:600}
+label.f{display:grid;gap:4px;font-size:13px;font-weight:600;min-width:0}
+input,select,textarea{font:500 15px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+textarea{resize:vertical}
+.hint{font-weight:500;color:var(--muted);font-size:12px}
+
+/* Meus imóveis */
+.admin-top{display:grid;gap:12px;padding-top:12px}
+@media(min-width:760px){.admin-top{grid-template-columns:auto 1fr;align-items:end}}
+.wa-set{display:flex;gap:8px;align-items:end;flex-wrap:wrap;background:var(--surface);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.wa-set label{flex:1 1 220px}
+.panel{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:18px;display:grid;gap:14px;margin-top:18px}
+.panel h2{margin:0;font-family:var(--display);font-size:21px;font-weight:800;letter-spacing:-.01em}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:560px){.g4{grid-template-columns:1fr 1fr}.g2.stack{grid-template-columns:1fr}}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--chip);border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:none;color:var(--muted);font:700 14px var(--body);padding:9px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:18px;text-align:center;display:grid;gap:6px;justify-items:center;cursor:pointer;background:var(--bg)}
+.drop.over{border-color:var(--accent);background:var(--chip)}
+.drop b{font-size:15px}
+.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.foto{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg);display:grid}
+.foto .im{position:relative;aspect-ratio:4/3;background:var(--chip)}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto .capa{position:absolute;top:6px;left:6px;font:700 10px var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:2px 6px;border-radius:5px}
+.foto .ld{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:var(--muted)}
+.foto input{border:0;border-top:1px solid var(--line);border-radius:0;font-size:13px;padding:7px 8px}
+.foto .acts{display:flex;border-top:1px solid var(--line)}
+.foto .acts button{flex:1;border:0;background:var(--surface);color:var(--ink);font:600 13px var(--body);padding:7px 0;cursor:pointer}
+.foto .acts button+button{border-left:1px solid var(--line)}
+.foto .acts button.danger{color:var(--bad)}
+.check{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14px}
+.check input{width:20px;height:20px}
+.form-acts{display:flex;gap:10px;flex-wrap:wrap}
+.form-acts .btn{width:auto;flex:1 1 180px}
+.alist{display:grid;gap:10px;margin-top:12px}
+.st-resumo{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px}
+.arow.fora .th{opacity:.55}
+.pill.done{background:var(--chip);color:var(--muted)}
+.mini.primary-mini{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.arow{display:grid;grid-template-columns:96px 1fr;gap:14px;background:var(--surface);border-radius:14px;box-shadow:var(--shadow);padding:10px;align-items:center}
+.arow .th{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--chip)}
+.arow .th img,.arow .th svg{width:100%;height:100%;object-fit:cover;display:block}
+.arow .m{min-width:0;display:grid;gap:3px}
+.arow .t{font-weight:700;overflow-wrap:anywhere}
+.arow .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.pill{display:inline-block;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;vertical-align:middle}
+.pill.on{background:var(--accent);color:var(--accent-ink)}
+.pill.off{background:var(--warn-bg);color:var(--warn)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+
+/* Painel: abas, acessos */
+.login{max-width:420px;margin:40px auto 0}
+.abas{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-top:12px}
+.abas button{border:0;background:none;color:var(--muted);font:700 14px var(--body);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.abas button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.abas .sair{margin-left:auto;color:var(--sun)}
+.admin-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-top:16px}
+.st-resumo{display:flex;gap:6px;flex-wrap:wrap}
+.per{display:inline-flex;background:var(--chip);border-radius:999px;padding:4px;margin-top:16px;flex-wrap:wrap}
+.per button{border:0;background:none;color:var(--muted);font:600 14px var(--body);padding:7px 14px;border-radius:999px;cursor:pointer}
+.per button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:16px}
+.kpi{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;display:grid;gap:2px}
+.kpi span{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kpi b{font-family:var(--display);font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi small{font-size:12px;color:var(--muted)}
+.dias14{display:grid;grid-template-columns:repeat(14,1fr);gap:6px;height:150px;align-items:end}
+.dcol{display:grid;grid-template-rows:18px 1fr 18px;height:100%;text-align:center;min-width:0}
+.dcol .dv{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dcol i{display:block;align-self:end;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
+.dcol .dl{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tabela{overflow-x:auto}
+.tabela table{width:100%;border-collapse:collapse;font-size:14px}
+.tabela th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.tabela td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tabela .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.tabela tr.fora td{color:var(--muted)}
+.tc{display:grid;gap:3px;min-width:0}
+.meter{display:block;height:6px;background:var(--chip);border-radius:3px;overflow:hidden;margin-top:3px}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:3px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+const API = "/api";
+let CFG = { nome: "Sertão Imobiliária", whatsapp: "", logo: "/logo.png", mostrarNome: false };
+let IMOVEIS = [];
+const TIPOS = ["Casa","Apartamento","Casa duplex","Kitnet","Chácara","Terreno","Sala comercial","Ponto comercial"];
+const COMODOS = ["Fachada","Sala","Quarto","Cozinha","Banheiro"];
+const COR_PADRAO = ["#E9E4D8","#4E6B5A"];
+const ROT = {disponivel:"Disponível",alugado:"Alugado",vendido:"Vendido",pausado:"Pausado"};
+const ROT_PL = {disponivel:"disponíveis",alugado:"alugados",vendido:"vendidos",pausado:"pausados"};
+const ROT_SG = {disponivel:"disponível",alugado:"alugado",vendido:"vendido",pausado:"pausado"};
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const brl = n => Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const num = v => { const d=String(v??"").replace(/\D/g,""); return d?parseInt(d,10):0; };
+const fmtN = n => Number(n||0).toLocaleString("pt-BR");
+function waNum(t){ let d=String(t||"").replace(/\D/g,""); if(d.length===10||d.length===11) d="55"+d; return d; }
+function fmtTel(t){ let d=String(t||"").replace(/\D/g,""); if(d.startsWith("55")&&d.length>11) d=d.slice(2);
+  if(d.length===11) return `(${d.slice(0,2)}) ${d[2]} ${d.slice(3,7)}-${d.slice(7)}`;
+  if(d.length===10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`; return t||""; }
+const waLink = (n,msg) => `https://wa.me/${waNum(n)}?text=${encodeURIComponent(msg)}`;
+function gps(im){
+  if(!im||!im.gps) return null;
+  const p=String(im.gps).split(/[,;\s]+/).filter(Boolean).map(Number);
+  if(p.length<2||p.some(isNaN)||Math.abs(p[0])>90||Math.abs(p[1])>180) return null;
+  const c=p[0]+","+p[1];
+  return {txt:p[0]+", "+p[1], mapa:"https://www.google.com/maps?q="+c,
+    rota:"https://www.google.com/maps/dir/?api=1&destination="+c, waze:"https://waze.com/ul?ll="+c+"&navigate=yes"};
+}
+const preco = im => im.modo==="aluguel" ? `${brl(im.preco)} <small>/mês</small>` : brl(im.preco);
+const statusDe = im => ROT[im.status] ? im.status : "disponivel";
+const isoLocal = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const hojeISO = () => isoLocal(new Date());
+const dBR = s => s ? s.split("-").reverse().join("/") : "";
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>el.hidden=true,4500); }
+const ls = { get(k){ try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null} }, set(k,v){ try{localStorage.setItem(k,JSON.stringify(v))}catch(e){} }, del(k){ try{localStorage.removeItem(k)}catch(e){} } };
+const ICON_WA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>';
+const LOGO_PADRAO = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M8 16 16 9l8 7v8h-5v-5h-6v5H8z" fill="var(--accent-ink)"/></svg>';
+const logoTag = c => c.logo ? `<img class="logo-img" src="${esc(c.logo)}" alt="Logo ${esc(c.nome)}">` : LOGO_PADRAO;
+
+/* Mensagem que o corretor recebe quando o cliente toca em "Marcar visita" */
+function msgVisita(im){
+  const g=gps(im);
+  return `Olá! Vi este imóvel no site da ${CFG.nome} e quero marcar uma visita:\n\n`+
+    `*${im.titulo}*\nCódigo: ${im.id}\n${im.tipo} · ${im.bairro}\n`+
+    `${im.modo==="aluguel"?"Aluguel":"Venda"}: ${brl(im.preco)}${im.modo==="aluguel"?"/mês":""}\n`+
+    `${im.q} quartos · ${im.b} banheiros · ${im.v} vagas · ${fmtN(im.area)} m²`+
+    (g?`\nLocalização: ${g.mapa}`:"")+
+    `\nLink: ${location.origin}/#${im.id}`+
+    `\n\nQual o melhor dia e horário para visitar?`;
+}
+const linkVisita = im => waLink(CFG.whatsapp, msgVisita(im));
+
+/* Contador: cada pessoa conta uma vez por dia em cada casa */
+function registrar(tipo,id){
+  if(location.hash==="#admin"||ls.get("st-senha")) return; // não conta o próprio corretor
+  const k=`st-ev-${tipo}-${id||"_"}-${hojeISO()}`;
+  if(ls.get(k)) return; ls.set(k,1);
+  try{ fetch(API+"/evento",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({tipo,id}),keepalive:true}).catch(()=>{}); }catch(e){}
+}
+
+/* ---------- ilustrações para imóveis sem foto ---------- */
+function shade(hex,p){const n=parseInt(hex.slice(1),16);const f=c=>Math.max(0,Math.min(255,Math.round(c+(p<0?c:255-c)*p)));return "#"+[f(n>>16),f(n>>8&255),f(n&255)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+function desenho(im,k){
+  const [wall,roof]=im.cor||COR_PADRAO, s=(im.id.charCodeAt(im.id.length-1)||0)%3, gid="g"+im.id+k;
+  const vb='viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"';
+  if(k===0){
+    const two=im.q>=3&&im.tipo!=="Apartamento", top=two?70:120;
+    return `<svg ${vb} role="img" aria-label="Ilustração"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7DB7E0"/><stop offset="1" stop-color="#D6ECF7"/></linearGradient></defs><rect width="400" height="300" fill="url(#${gid})"/>
+    <circle cx="${330-s*40}" cy="55" r="22" fill="#FFE59A"/>
+    <rect y="230" width="400" height="70" fill="#9CBF6E"/><rect y="250" width="400" height="50" fill="#C9B79A"/>
+    <circle cx="40" cy="190" r="38" fill="#4F8A4A"/><rect x="36" y="200" width="8" height="40" fill="#6B4B2E"/>
+    <rect x="90" y="${top}" width="240" height="${235-top}" fill="${wall}"/>
+    <polygon points="75,${top+2} 210,${top-55} 345,${top+2}" fill="${roof}"/>
+    ${two?`<rect x="90" y="150" width="240" height="6" fill="${shade(wall,-.15)}"/><rect x="120" y="90" width="50" height="40" fill="#BFDDEB" stroke="#fff" stroke-width="4"/><rect x="250" y="90" width="50" height="40" fill="#BFDDEB" stroke="#fff" stroke-width="4"/>`:""}
+    <rect x="190" y="170" width="40" height="65" fill="${shade(roof,-.2)}"/><circle cx="222" cy="205" r="3" fill="#F0B73E"/>
+    <rect x="115" y="172" width="55" height="40" fill="#BFDDEB" stroke="#fff" stroke-width="4"/>
+    <rect x="250" y="172" width="55" height="40" fill="#BFDDEB" stroke="#fff" stroke-width="4"/>
+    ${(im.extras||[]).includes("Piscina")?`<rect x="300" y="255" width="90" height="30" rx="6" fill="#5EC3E3"/>`:""}
+    <rect x="345" y="205" width="4" height="30" fill="#6B4B2E"/><circle cx="347" cy="200" r="16" fill="#5C9A52"/></svg>`;
+  }
+  const floor=shade(wall,-.35), w2=shade(wall,.25);
+  if(k===1) return `<svg ${vb}><rect width="400" height="300" fill="${w2}"/><rect y="215" width="400" height="85" fill="${floor}"/>
+    <rect x="230" y="50" width="120" height="100" fill="#BFDDEB" stroke="#fff" stroke-width="6"/><line x1="290" y1="50" x2="290" y2="150" stroke="#fff" stroke-width="4"/>
+    <rect x="40" y="160" width="170" height="60" rx="10" fill="${roof}"/><rect x="40" y="140" width="170" height="35" rx="10" fill="${shade(roof,.15)}"/>
+    <rect x="245" y="200" width="90" height="10" rx="3" fill="#6B4B2E"/><rect x="255" y="208" width="6" height="22" fill="#6B4B2E"/><rect x="320" y="208" width="6" height="22" fill="#6B4B2E"/>
+    <rect x="360" y="185" width="22" height="35" fill="#B7864C"/><circle cx="371" cy="170" r="22" fill="#4F8A4A"/>
+    <rect x="70" y="70" width="70" height="50" fill="${shade(roof,.4)}" stroke="#fff" stroke-width="3"/></svg>`;
+  if(k===2) return `<svg ${vb}><rect width="400" height="300" fill="${w2}"/><rect y="220" width="400" height="80" fill="${floor}"/>
+    <rect x="90" y="120" width="220" height="40" rx="6" fill="${shade(roof,-.1)}"/><rect x="80" y="155" width="240" height="70" rx="8" fill="#FBFBF7"/>
+    <rect x="80" y="175" width="240" height="50" rx="8" fill="${roof}"/><rect x="105" y="140" width="70" height="25" rx="8" fill="#fff"/><rect x="225" y="140" width="70" height="25" rx="8" fill="#fff"/>
+    <rect x="330" y="185" width="45" height="40" fill="#8A6A45"/><circle cx="352" cy="170" r="10" fill="#F0B73E"/>
+    <rect x="20" y="60" width="50" height="160" fill="${shade(wall,-.1)}"/></svg>`;
+  if(k===3) return `<svg ${vb}><rect width="400" height="300" fill="#F4F2EC"/><rect y="230" width="400" height="70" fill="${floor}"/>
+    <rect x="30" y="40" width="340" height="60" fill="${roof}"/><line x1="143" y1="40" x2="143" y2="100" stroke="#fff" stroke-width="2"/><line x1="256" y1="40" x2="256" y2="100" stroke="#fff" stroke-width="2"/>
+    <rect x="30" y="150" width="340" height="80" fill="${roof}"/><rect x="25" y="145" width="350" height="10" fill="#D8D4CA"/>
+    <rect x="160" y="135" width="60" height="12" rx="3" fill="#B9C3C9"/><rect x="270" y="110" width="50" height="35" fill="#BFDDEB" stroke="#fff" stroke-width="3"/>
+    <rect x="60" y="120" width="40" height="25" rx="4" fill="#8A8F94"/></svg>`;
+  return `<svg ${vb}><rect width="400" height="300" fill="#EEF3F3"/>
+    <g stroke="#D3DCDD" stroke-width="2">${[...Array(9)].map((_,i)=>`<line x1="${i*50}" y1="0" x2="${i*50}" y2="300"/>`).join("")}${[...Array(6)].map((_,i)=>`<line x1="0" y1="${i*50}" x2="400" y2="${i*50}"/>`).join("")}</g>
+    <rect x="60" y="150" width="110" height="60" rx="6" fill="#fff"/><rect x="95" y="60" width="40" height="70" rx="4" fill="#BFDDEB" stroke="#fff" stroke-width="4"/>
+    <rect x="240" y="40" width="110" height="230" fill="${shade(roof,.3)}" opacity=".7"/><circle cx="330" cy="70" r="8" fill="#B9C3C9"/></svg>`;
+}
+function fotosDe(im){
+  if(im.fotos&&im.fotos.length) return im.fotos.map((f,i)=>({html:`<img src="${esc(f.src)}" alt="${esc(f.nome||im.titulo)}" ${i?'loading="lazy"':""}>`, nome:f.nome||("Foto "+(i+1))}));
+  return COMODOS.map((c,i)=>({html:desenho(im,i), nome:c+" (ilustração)"}));
+}
+
+/* ---------- estrutura ---------- */
+$("#app").innerHTML = `
+<header><div class="bar">
+  <button class="logo" id="logo" aria-label="Início"></button>
+  <div class="tabs" role="group" aria-label="Tipo de negócio">
+    <button data-mode="venda" aria-pressed="false">Comprar</button>
+    <button data-mode="aluguel" aria-pressed="true">Alugar</button>
+  </div>
+  <button class="owner-btn" id="btn-admin" aria-pressed="false" hidden>Painel</button>
+</div></header>
+<main class="wrap" id="v-lista">
+  <section class="intro">
+    <h1 id="headline">Casas para alugar</h1>
+    <p>Veja as fotos e toque em <b>Marcar visita</b>. A mensagem vai direto para o WhatsApp do corretor, com os dados da casa.</p>
+  </section>
+  <div class="filters">
+    <select id="f-bairro" aria-label="Bairro"></select>
+    <select id="f-quartos" aria-label="Quartos"><option value="0">Quartos: todos</option><option value="1">1+ quarto</option><option value="2">2+ quartos</option><option value="3">3+ quartos</option></select>
+    <select id="f-ordem" aria-label="Ordenar"><option value="menor">Menor preço</option><option value="maior">Maior preço</option></select>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="grid" id="grid"><p class="empty">Carregando imóveis…</p></div>
+  <footer id="rodape"></footer>
+</main>
+<main class="wrap" id="v-admin" hidden></main>
+<div class="overlay" id="overlay" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="d-title" id="sheet"></div></div>
+<div class="toast" id="toast" role="status" hidden></div>`;
+
+function renderMarca(){
+  $("#logo").innerHTML=logoTag(CFG)+(CFG.mostrarNome?`<span>${esc(CFG.nome)}</span>`:"");
+  $("#rodape").textContent=`${CFG.nome}${CFG.whatsapp?" · WhatsApp "+fmtTel(CFG.whatsapp):""}`;
+  document.title=CFG.nome;
+}
+
+/* ---------- lista ---------- */
+let modo="aluguel", carregado=false;
+function fillBairros(){
+  const cur=$("#f-bairro").value;
+  const bs=[...new Set(IMOVEIS.filter(i=>i.modo===modo).map(i=>i.bairro))].sort();
+  $("#f-bairro").innerHTML=`<option value="">Bairro: todos</option>`+bs.map(b=>`<option>${esc(b)}</option>`).join("");
+  if(bs.includes(cur)) $("#f-bairro").value=cur;
+}
+function render(){
+  if(!carregado) return;
+  const b=$("#f-bairro").value,q=+$("#f-quartos").value,o=$("#f-ordem").value;
+  const l=IMOVEIS.filter(i=>i.modo===modo&&(!b||i.bairro===b)&&i.q>=q).sort((x,y)=>o==="menor"?x.preco-y.preco:y.preco-x.preco);
+  $("#count").textContent=`${l.length} ${l.length===1?"imóvel":"imóveis"}`;
+  $("#grid").innerHTML=l.length?l.map(im=>{ const fs=fotosDe(im); return `
+   <article class="card">
+    <button class="card-open" data-id="${esc(im.id)}" aria-label="Ver fotos de ${esc(im.titulo)}">
+     <div class="ph">${fs[0].html}<span class="tag">${esc(im.tipo)}</span><span class="nphotos">${fs.length} fotos</span></div>
+     <div class="cbody">
+      <div class="price">${preco(im)}</div>
+      <div class="ttl">${esc(im.titulo)}</div>
+      <div class="loc">${esc(im.bairro)}${gps(im)?` · <span class="pin">Com localização GPS</span>`:""}</div>
+      <div class="specs"><span><b>${im.q}</b> quartos</span><span><b>${im.b}</b> banh.</span><span><b>${im.v}</b> vagas</span><span><b>${fmtN(im.area)}</b> m²</span></div>
+     </div>
+    </button>
+    <a class="btn wa card-wa" data-visita="${esc(im.id)}" href="${linkVisita(im)}" target="_blank" rel="noopener">${ICON_WA}Marcar visita</a>
+   </article>`; }).join(""):`<p class="empty">Nenhum imóvel ${modo==="aluguel"?"para alugar":"à venda"} com esses filtros no momento.</p>`;
+}
+function setModo(m){
+  modo=m;
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
+  $("#headline").textContent=m==="aluguel"?"Casas para alugar":"Casas à venda";
+  fillBairros(); render();
+  if(!$("#v-admin").hidden){ location.hash=""; }
+  try{localStorage.setItem("st-modo",m)}catch(e){}
+}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>setModo(b.dataset.mode));
+["#f-bairro","#f-quartos","#f-ordem"].forEach(s=>$(s).onchange=render);
+$("#grid").onclick=e=>{const c=e.target.closest(".card-open"); if(c) abrir(c.dataset.id);};
+$("#logo").onclick=()=>{ if(location.hash) location.hash=""; else mostrarView("lista"); };
+document.addEventListener("click",e=>{ const a=e.target.closest("[data-visita]"); if(a) registrar("visita",a.dataset.visita); });
+
+async function carregarPublico(){
+  try{
+    const r=await fetch(API+"/imoveis",{cache:"no-store"});
+    if(!r.ok) throw new Error(r.status);
+    const d=await r.json(); CFG=d.config||CFG; IMOVEIS=d.imoveis||[]; carregado=true;
+    renderMarca(); fillBairros(); render();
+  }catch(e){
+    $("#grid").innerHTML=`<div class="empty"><p>Não foi possível carregar os imóveis. Verifique sua internet.</p><button class="btn ghost sm" id="tentar">Tentar de novo</button></div>`;
+    $("#tentar").onclick=carregarPublico;
+  }
+}
+
+/* ---------- ficha do imóvel ---------- */
+let atual=null, FS=[], idx=0, lastFocus=null;
+function abrir(id){
+  atual=IMOVEIS.find(i=>i.id===id); if(!atual) return; FS=fotosDe(atual); idx=0; lastFocus=document.activeElement;
+  registrar("casa",id);
+  const im=atual, g=gps(im);
+  $("#sheet").innerHTML=`
+   <div class="gal"><div id="big" style="height:100%"></div>
+    ${FS.length>1?`<button class="nav prev" id="prev" aria-label="Foto anterior">‹</button><button class="nav next" id="next" aria-label="Próxima foto">›</button>`:""}
+    <button class="close" id="fechar">Fechar ✕</button>
+    <span class="room" id="room"></span></div>
+   ${FS.length>1?`<div class="thumbs" id="thumbs">${FS.map((f,i)=>`<button data-i="${i}" aria-label="${esc(f.nome)}">${f.html}</button>`).join("")}</div>`:""}
+   <div class="info">
+    <div>
+     <div class="code">Cód. ${esc(im.id)} · ${im.modo==="aluguel"?"Aluguel":"Venda"}</div>
+     <h2 id="d-title">${esc(im.titulo)}</h2>
+     <div class="loc">${esc(im.tipo)} · ${esc(im.bairro)}</div>
+     <div class="price" style="margin-top:8px">${preco(im)}</div>
+     <div class="facts">
+      <div><b>${im.q}</b><span>quartos</span></div><div><b>${im.b}</b><span>banheiros</span></div>
+      <div><b>${im.v}</b><span>vagas</span></div><div><b>${fmtN(im.area)}</b><span>m²</span></div>
+     </div>
+     ${im.desc?`<p class="desc">${esc(im.desc)}</p>`:""}
+     ${(im.extras||[]).length?`<ul class="extras">${im.extras.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+     ${g?`<div class="gps">
+      <div class="gps-head">
+       <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="18" fill="var(--accent)"/><path d="M18 8a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.6a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z" fill="var(--accent-ink)"/></svg>
+       <div><b>Localização GPS</b><span class="coords" id="coords">${g.txt}</span></div>
+       <button class="mini" type="button" id="gps-copy">Copiar</button>
+      </div>
+      <div class="gps-btns">
+       <a href="${g.mapa}" target="_blank" rel="noopener">Ver no mapa</a>
+       <a href="${g.rota}" target="_blank" rel="noopener">Como chegar</a>
+       <a href="${g.waze}" target="_blank" rel="noopener">Waze</a>
+      </div></div>`:""}
+    </div>
+    <div class="visit">
+     <h3>Gostou desta casa?</h3>
+     <a class="btn wa" data-visita="${esc(im.id)}" href="${linkVisita(im)}" target="_blank" rel="noopener">${ICON_WA}Marcar visita</a>
+     <p class="note">Abre o WhatsApp do corretor com os dados desta casa. É só enviar e combinar o dia.</p>
+     <p class="note">Corretor: ${esc(fmtTel(CFG.whatsapp))}</p>
+    </div>
+   </div>`;
+  showFoto();
+  if(FS.length>1){
+    $("#prev").onclick=()=>{idx=(idx+FS.length-1)%FS.length;showFoto()};
+    $("#next").onclick=()=>{idx=(idx+1)%FS.length;showFoto()};
+    $("#thumbs").onclick=e=>{const b=e.target.closest("button");if(b){idx=+b.dataset.i;showFoto()}};
+  }
+  $("#fechar").onclick=fechar;
+  if(g) $("#gps-copy").onclick=()=>copiar(g.txt,$("#gps-copy"));
+  $("#overlay").hidden=false; document.body.style.overflow="hidden"; $("#fechar").focus();
+  if(location.hash!=="#"+id) history.replaceState(null,"","#"+id);
+}
+function showFoto(){
+  $("#big").innerHTML=FS[idx].html;
+  $("#room").textContent=`${FS[idx].nome} · ${idx+1}/${FS.length}`;
+  document.querySelectorAll("#thumbs button").forEach((b,i)=>b.setAttribute("aria-current",i===idx));
+}
+function fechar(){ $("#overlay").hidden=true; document.body.style.overflow=""; if(location.hash&&location.hash!=="#admin") history.replaceState(null,"",location.pathname); lastFocus&&lastFocus.focus&&lastFocus.focus(); }
+$("#overlay").onclick=e=>{ if(e.target.id==="overlay") fechar(); };
+document.addEventListener("keydown",e=>{
+  if($("#overlay").hidden) return;
+  if(e.key==="Escape") fechar();
+  if(FS.length>1&&!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)){ if(e.key==="ArrowRight")$("#next").click(); if(e.key==="ArrowLeft")$("#prev").click(); }
+});
+function copiar(txt,btn,ok){
+  const done=()=>{ btn.textContent="Copiado"; if(ok) toast(ok); };
+  try{ navigator.clipboard.writeText(txt).then(done,()=>toast(txt)); }catch(e){ toast(txt); }
+}
+
+/* ---------- painel do administrador (seusite/#admin) ---------- */
+let SENHA=ls.get("st-senha"), ADM=null, aba="imoveis", periodo=30, F=null, enviando=0;
+async function api(caminho,opt={}){
+  const r=await fetch(API+caminho,{...opt,headers:{...(opt.headers||{}),"x-senha":SENHA||""}});
+  let d={}; try{ d=await r.json(); }catch(e){}
+  if(!r.ok){ const err=new Error(d.erro||"Erro "+r.status); err.status=r.status; throw err; }
+  return d;
+}
+async function recarregarAdm(){ ADM=await api("/admin"); CFG=ADM.config; renderMarca(); }
+function mostrarView(v){
+  $("#v-lista").hidden=v!=="lista"; $("#v-admin").hidden=v!=="admin";
+  $("#btn-admin").setAttribute("aria-pressed",v==="admin");
+  if(v==="admin"){ fechar(); entrarAdmin(); }
+  window.scrollTo(0,0);
+}
+$("#btn-admin").onclick=()=>{ location.hash=$("#v-admin").hidden?"admin":""; };
+
+async function entrarAdmin(){
+  $("#btn-admin").hidden=false;
+  if(!SENHA){ renderLogin(); return; }
+  $("#v-admin").innerHTML=`<p class="empty">Abrindo o painel…</p>`;
+  try{ await recarregarAdm(); renderAdmin(); }
+  catch(e){ if(e.status===401){ SENHA=null; ls.del("st-senha"); renderLogin("Senha incorreta. Tente de novo."); } else renderLogin(e.message); }
+}
+function renderLogin(msg){
+  $("#v-admin").innerHTML=`<form class="panel login" id="login" novalidate>
+    <h2>Painel do corretor</h2>
+    <p class="note" style="font-size:14px">Digite a senha do administrador para cadastrar imóveis e ver os acessos.</p>
+    <label class="f" for="l-senha">Senha<input id="l-senha" type="password" autocomplete="current-password"></label>
+    <p class="err" id="l-err" ${msg?"":"hidden"}>${esc(msg||"")}</p>
+    <button class="btn primary" type="submit">Entrar</button>
+  </form>`;
+  $("#l-senha").focus();
+  $("#login").onsubmit=async e=>{ e.preventDefault(); SENHA=$("#l-senha").value; if(!SENHA) return;
+    try{ await recarregarAdm(); ls.set("st-senha",SENHA); renderAdmin(); }
+    catch(err){ SENHA=null; $("#l-err").textContent=err.status===401?"Senha incorreta.":err.message; $("#l-err").hidden=false; } };
+}
+function sair(){ SENHA=null; ADM=null; ls.del("st-senha"); location.hash=""; $("#btn-admin").hidden=true; toast("Você saiu do painel."); }
+
+function renderAdmin(){
+  const abas={imoveis:"Imóveis",acessos:"Acessos",marca:"Marca e WhatsApp"};
+  $("#v-admin").innerHTML=`
+  <section class="intro"><h1>Painel do corretor</h1>
+    <p>Só você vê esta área. Cadastre as casas, acompanhe quantas pessoas abriram cada uma e marque quando alugar ou vender.</p></section>
+  <div class="abas" role="tablist">${Object.keys(abas).map(k=>`<button role="tab" data-aba="${k}" aria-selected="${k===aba}">${abas[k]}</button>`).join("")}
+    <button class="sair" id="sair" type="button">Sair</button></div>
+  <div id="aba-conteudo"></div>`;
+  document.querySelectorAll(".abas [data-aba]").forEach(b=>b.onclick=()=>{ aba=b.dataset.aba; F=null; renderAdmin(); });
+  $("#sair").onclick=sair;
+  ({imoveis:abaImoveis,acessos:abaAcessos,marca:abaMarca})[aba]();
+}
+
+/* contagem por período */
+function somar(st,tipo,dias){
+  if(!st) return 0;
+  if(!dias) return (st.total&&st.total[tipo])||0;
+  const ini=new Date(); ini.setDate(ini.getDate()-dias+1); const lim=isoLocal(ini);
+  return Object.entries(st.dias||{}).reduce((s,[d,v])=>d>=lim?s+(v[tipo]||0):s,0);
+}
+
+function abaImoveis(){
+  const l=ADM.imoveis, box=$("#aba-conteudo");
+  box.innerHTML=`
+  <div class="admin-top"><button class="btn primary sm" id="novo" type="button">+ Cadastrar imóvel</button>
+    <div class="st-resumo">${Object.keys(ROT).map(k=>`<span class="pill ${k==="disponivel"?"on":k==="pausado"?"off":"done"}">${(n=>n+" "+(n===1?ROT_SG[k]:ROT_PL[k]))(l.filter(i=>statusDe(i)===k).length)}</span>`).join(" ")}</div></div>
+  <div id="form-box"></div>
+  <div class="alist">${l.length?[...l].sort((x,y)=>(statusDe(x)==="disponivel"?0:1)-(statusDe(y)==="disponivel"?0:1)).map(im=>{ const st=statusDe(im), ok=st==="disponivel", s=ADM.stats[im.id]; return `
+    <div class="arow${ok?"":" fora"}">
+      <div class="th">${fotosDe(im)[0].html}</div>
+      <div class="m">
+        <div class="t">${esc(im.titulo)} ${im.exemplo?`<span class="pill off">Exemplo</span>`:""}</div>
+        <div class="loc">${esc(im.id)} · ${im.modo==="aluguel"?"Aluguel":"Venda"} · ${esc(im.bairro)} · ${brl(im.preco)}${im.modo==="aluguel"?"/mês":""}</div>
+        <div><span class="pill ${ok?"on":st==="pausado"?"off":"done"}">${ROT[st]}${!ok&&im.statusEm?" desde "+dBR(im.statusEm):""}</span>
+          <span class="note" style="display:inline">${ok?"Aparece no site":"Só você vê"} · Últimos 30 dias: abriram ${fmtN(somar(s,"casa",30))} · pediram visita ${fmtN(somar(s,"visita",30))}</span></div>
+        <div class="acts">
+          ${ok?`<button class="mini" data-st="${im.modo==="aluguel"?"alugado":"vendido"}" data-id="${esc(im.id)}">Marcar como ${im.modo==="aluguel"?"alugado":"vendido"}</button>
+          <button class="mini" data-st="pausado" data-id="${esc(im.id)}">Pausar anúncio</button>
+          <button class="mini" data-link="${esc(im.id)}">Copiar link da casa</button>`
+          :`<button class="mini primary-mini" data-st="disponivel" data-id="${esc(im.id)}">Anunciar de novo</button>`}
+          <button class="mini" data-edit="${esc(im.id)}">Editar</button>
+          <button class="mini danger" data-del="${esc(im.id)}">Apagar</button>
+        </div>
+      </div>
+    </div>`; }).join(""):`<p class="empty">Nenhum imóvel cadastrado. Toque em Cadastrar imóvel.</p>`}</div>`;
+  $("#novo").onclick=()=>abrirForm(null);
+  box.querySelector(".alist").onclick=async e=>{
+    const ed=e.target.closest("[data-edit]"), tg=e.target.closest("[data-st]"), dl=e.target.closest("[data-del]"), lk=e.target.closest("[data-link]");
+    if(ed) abrirForm(ed.dataset.edit);
+    if(lk) copiar(location.origin+"/#"+lk.dataset.link, lk, "Link copiado. Cole no WhatsApp, Instagram ou onde quiser.");
+    if(tg){ const im={...ADM.imoveis.find(i=>i.id===tg.dataset.id)}, st=tg.dataset.st;
+      im.status=st; im.statusEm=st==="disponivel"?"":hojeISO(); tg.disabled=true;
+      try{ await api("/admin/imovel",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(im)});
+        await atualizarTudo(); toast(st==="disponivel"?"Imóvel anunciado de novo. Os clientes já veem.":`Marcado como ${ROT[st].toLowerCase()}. Os clientes não veem mais, só você.`); }
+      catch(err){ tg.disabled=false; toast(err.message); } }
+    if(dl){
+      if(dl.dataset.sure!=="1"){ dl.dataset.sure="1"; dl.textContent="Toque de novo para apagar"; return; }
+      dl.disabled=true;
+      try{ await api("/admin/imovel?id="+encodeURIComponent(dl.dataset.del),{method:"DELETE"}); await atualizarTudo(); toast("Imóvel apagado."); }
+      catch(err){ dl.disabled=false; toast(err.message); }
+    }
+  };
+}
+async function atualizarTudo(){ await recarregarAdm(); renderAdmin(); carregarPublico(); }
+
+function abrirForm(id){
+  const base=id?ADM.imoveis.find(i=>i.id===id):null;
+  F=base?JSON.parse(JSON.stringify(base)):{status:"disponivel",modo:"aluguel",tipo:"Casa",titulo:"",bairro:"",preco:0,q:2,b:1,v:1,area:0,extras:[],desc:"",gps:"",fotos:[]};
+  F.fotos=F.fotos||[];
+  const tipos=TIPOS.includes(F.tipo)?TIPOS:[F.tipo,...TIPOS];
+  $("#form-box").innerHTML=`
+  <form class="panel" id="fm" novalidate>
+    <h2>${base?"Editar imóvel":"Cadastrar imóvel"} ${base?`<span class="note" style="display:inline;font-family:var(--body)">${esc(F.id)}</span>`:""}</h2>
+    <label class="f" for="i-titulo">Título do anúncio<input id="i-titulo" maxlength="90" placeholder="Ex.: Casa com 3 quartos e quintal" value="${esc(F.titulo)}"></label>
+    <div class="g2 stack">
+      <div class="f" style="display:grid;gap:4px;font-size:13px;font-weight:600">Negócio
+        <div class="seg" role="group" aria-label="Negócio">
+          <button type="button" data-modo="aluguel" aria-pressed="${F.modo==="aluguel"}">Aluguel</button>
+          <button type="button" data-modo="venda" aria-pressed="${F.modo==="venda"}">Venda</button>
+        </div></div>
+      <label class="f" for="i-tipo">Tipo<select id="i-tipo">${tipos.map(t=>`<option ${t===F.tipo?"selected":""}>${esc(t)}</option>`).join("")}</select></label>
+    </div>
+    <div class="g2 stack">
+      <label class="f" for="i-bairro">Bairro<input id="i-bairro" placeholder="Ex.: Centro" value="${esc(F.bairro)}"></label>
+      <label class="f" for="i-preco"><span id="i-preco-l">${F.modo==="aluguel"?"Aluguel por mês (R$)":"Preço de venda (R$)"}</span><input id="i-preco" inputmode="numeric" placeholder="Ex.: 1.200" value="${F.preco?fmtN(F.preco):""}"></label>
+    </div>
+    <div class="g4">
+      <label class="f" for="i-q">Quartos<input id="i-q" type="number" min="0" value="${F.q}"></label>
+      <label class="f" for="i-b">Banheiros<input id="i-b" type="number" min="0" value="${F.b}"></label>
+      <label class="f" for="i-v">Vagas<input id="i-v" type="number" min="0" value="${F.v}"></label>
+      <label class="f" for="i-area">Área (m²)<input id="i-area" inputmode="numeric" value="${F.area||""}"></label>
+    </div>
+    <label class="f" for="i-desc">Descrição<textarea id="i-desc" rows="4" placeholder="Conte como é a casa, a rua, o que tem perto…">${esc(F.desc)}</textarea></label>
+    <label class="f" for="i-extras">Destaques <span class="hint">separe por vírgula</span><input id="i-extras" placeholder="Ex.: Quintal, Aceita pet, Perto da escola" value="${esc((F.extras||[]).join(", "))}"></label>
+    <label class="f" for="i-gps">Localização GPS <span class="hint">no Google Maps, toque e segure em cima da casa e copie os números</span>
+      <input id="i-gps" placeholder="-7.2131, -39.3153" value="${esc(F.gps||"")}"></label>
+    <p class="note" id="i-gps-ok"></p>
+    <div class="f" style="display:grid;gap:8px;font-size:13px;font-weight:600">Fotos <span class="hint">A primeira foto é a capa. Use as setas para mudar a ordem.</span>
+      <label class="drop" id="drop" for="i-fotos">
+        <b>Adicionar fotos</b><span class="note">Toque para escolher na galeria ou arraste as fotos aqui</span>
+        <input id="i-fotos" type="file" accept="image/*" multiple hidden>
+      </label>
+      <div class="fotos" id="fotos"></div>
+    </div>
+    <label class="f" for="i-status">Situação <span class="hint">só "Disponível" aparece no site</span>
+      <select id="i-status">${Object.keys(ROT).map(k=>`<option value="${k}" ${statusDe(F)===k?"selected":""}>${ROT[k]}</option>`).join("")}</select></label>
+    <p class="err" id="i-err" hidden></p>
+    <div class="form-acts">
+      <button class="btn primary" type="submit" id="i-salvar">${base?"Salvar alterações":"Cadastrar imóvel"}</button>
+      <button class="btn ghost" type="button" id="i-cancel">Cancelar</button>
+    </div>
+  </form>`;
+  document.querySelectorAll("#fm .seg button").forEach(b=>b.onclick=()=>{
+    F.modo=b.dataset.modo; document.querySelectorAll("#fm .seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    $("#i-preco-l").textContent=F.modo==="aluguel"?"Aluguel por mês (R$)":"Preço de venda (R$)";
+  });
+  $("#i-preco").oninput=()=>{ const n=num($("#i-preco").value); $("#i-preco").value=n?fmtN(n):""; };
+  $("#i-gps").oninput=gpsInfo; gpsInfo();
+  $("#i-fotos").onchange=e=>{ adicionarFotos([...e.target.files]); e.target.value=""; };
+  const dz=$("#drop");
+  dz.ondragover=e=>{e.preventDefault(); dz.classList.add("over");};
+  dz.ondragleave=()=>dz.classList.remove("over");
+  dz.ondrop=e=>{e.preventDefault(); dz.classList.remove("over"); adicionarFotos([...e.dataTransfer.files].filter(f=>f.type.startsWith("image/")));};
+  $("#fotos").onclick=e=>{
+    const b=e.target.closest("button[data-a]"); if(!b) return; const i=+b.dataset.i, a=b.dataset.a;
+    if(a==="esq"&&i>0) [F.fotos[i-1],F.fotos[i]]=[F.fotos[i],F.fotos[i-1]];
+    if(a==="dir"&&i<F.fotos.length-1) [F.fotos[i+1],F.fotos[i]]=[F.fotos[i],F.fotos[i+1]];
+    if(a==="del") F.fotos.splice(i,1);
+    renderFotos();
+  };
+  $("#fotos").oninput=e=>{ const t=e.target.closest("input[data-n]"); if(t) F.fotos[+t.dataset.n].nome=t.value; };
+  $("#i-cancel").onclick=()=>{ F=null; $("#form-box").innerHTML=""; };
+  $("#fm").onsubmit=salvarForm;
+  renderFotos();
+  $("#form-box").scrollIntoView({behavior:"smooth",block:"start"});
+  $("#i-titulo").focus({preventScroll:true});
+}
+function gpsInfo(){
+  const g=gps({gps:$("#i-gps").value}), el=$("#i-gps-ok");
+  if(!$("#i-gps").value.trim()){ el.textContent="Sem localização: o cliente não verá os botões de mapa."; return; }
+  el.innerHTML=g?`Coordenadas certas. <a href="${g.mapa}" target="_blank" rel="noopener">Conferir no mapa</a>`:`<span class="err">Coordenadas inválidas. Use o formato -7.2131, -39.3153</span>`;
+}
+function renderFotos(){
+  const box=$("#fotos"); if(!box) return;
+  box.innerHTML=F.fotos.map((f,i)=>`<div class="foto">
+    <div class="im">${f.src?`<img src="${esc(f.src)}" alt="">`:`<span class="ld">Enviando…</span>`}${i===0&&f.src?`<span class="capa">Capa</span>`:""}</div>
+    <input data-n="${i}" placeholder="Nome (ex.: Sala)" value="${esc(f.nome||"")}" aria-label="Nome da foto ${i+1}" ${f.src?"":"disabled"}>
+    <div class="acts"><button type="button" data-a="esq" data-i="${i}" aria-label="Mover para a esquerda" ${i===0||!f.src?"disabled":""}>‹</button><button type="button" data-a="dir" data-i="${i}" aria-label="Mover para a direita" ${i===F.fotos.length-1||!f.src?"disabled":""}>›</button><button type="button" class="danger" data-a="del" data-i="${i}" ${f.src?"":"disabled"}>Tirar</button></div>
+  </div>`).join("");
+  const s=$("#i-salvar"); if(s){ s.disabled=enviando>0; s.textContent=enviando>0?`Enviando ${enviando} foto(s)…`:(F.id?"Salvar alterações":"Cadastrar imóvel"); }
+}
+function carregarImg(file){
+  return new Promise((ok,erro)=>{ const u=URL.createObjectURL(file), i=new Image();
+    i.onload=()=>{ ok(i); setTimeout(()=>URL.revokeObjectURL(u),1000); }; i.onerror=()=>erro(new Error("Não consegui abrir a imagem "+file.name+".")); i.src=u; });
+}
+async function enviarImagem(file,max,tipo,q){
+  const img=await carregarImg(file);
+  const s=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement("canvas"); c.width=Math.round(img.naturalWidth*s); c.height=Math.round(img.naturalHeight*s);
+  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  const blob=await new Promise(r=>c.toBlob(r,tipo,q));
+  const d=await api("/admin/foto",{method:"POST",headers:{"content-type":tipo},body:blob});
+  return d.url;
+}
+async function adicionarFotos(files){
+  if(!files.length) return;
+  const alvo=F;
+  for(const file of files){
+    const slot={src:"",nome:""}; alvo.fotos.push(slot); enviando++; renderFotos();
+    try{ slot.src=await enviarImagem(file,1600,"image/jpeg",.82); }
+    catch(e){ alvo.fotos.splice(alvo.fotos.indexOf(slot),1); toast(e.message||"Não consegui enviar a foto."); }
+    enviando--; if(F===alvo) renderFotos();
+  }
+}
+async function salvarForm(e){
+  e.preventDefault();
+  if(enviando>0) return;
+  const st0=statusDe(F);
+  F.titulo=$("#i-titulo").value.trim(); F.tipo=$("#i-tipo").value; F.bairro=$("#i-bairro").value.trim();
+  F.preco=num($("#i-preco").value); F.q=+$("#i-q").value||0; F.b=+$("#i-b").value||0; F.v=+$("#i-v").value||0; F.area=num($("#i-area").value);
+  F.desc=$("#i-desc").value.trim(); F.extras=$("#i-extras").value.split(",").map(s=>s.trim()).filter(Boolean);
+  F.gps=$("#i-gps").value.trim(); F.fotos=F.fotos.filter(f=>f.src);
+  F.status=$("#i-status").value; if(F.status!==st0) F.statusEm=F.status==="disponivel"?"":hojeISO();
+  const falta=[]; if(!F.titulo) falta.push("o título"); if(!F.bairro) falta.push("o bairro"); if(!F.preco) falta.push("o preço");
+  if(F.gps&&!gps(F)) falta.push("coordenadas GPS válidas (ou deixe em branco)");
+  if(falta.length){ $("#i-err").textContent="Falta preencher "+falta.join(", ")+"."; $("#i-err").hidden=false; return; }
+  const novo=!F.id; delete F.exemplo;
+  $("#i-salvar").disabled=true; $("#i-salvar").textContent="Salvando…";
+  try{
+    await api("/admin/imovel",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(F)});
+    F=null; await atualizarTudo(); toast(novo?"Imóvel cadastrado. Já aparece no site.":"Alterações salvas.");
+  }catch(err){ $("#i-err").textContent=err.message; $("#i-err").hidden=false; $("#i-salvar").disabled=false; $("#i-salvar").textContent=novo?"Cadastrar imóvel":"Salvar alterações"; }
+}
+
+function abaAcessos(){
+  const S=ADM.stats||{}, box=$("#aba-conteudo"), P=periodo;
+  const site=somar(S._site,"site",P);
+  const linhas=ADM.imoveis.map(im=>({im, casa:somar(S[im.id],"casa",P), visita:somar(S[im.id],"visita",P)})).sort((a,b)=>b.casa-a.casa||b.visita-a.visita);
+  const casas=linhas.reduce((s,l)=>s+l.casa,0), visitas=linhas.reduce((s,l)=>s+l.visita,0);
+  const max=Math.max(1,...linhas.map(l=>l.casa));
+  const dias=[...Array(14)].map((_,i)=>{ const d=new Date(); d.setDate(d.getDate()-13+i); const k=isoLocal(d); return {k, n:((S._site&&S._site.dias&&S._site.dias[k])||{}).site||0, d}; });
+  const dmax=Math.max(1,...dias.map(d=>d.n));
+  box.innerHTML=`
+  <div class="per" role="group" aria-label="Período">${[[7,"7 dias"],[30,"30 dias"],[0,"Desde o início"]].map(([v,t])=>`<button data-p="${v}" aria-pressed="${v===P}">${t}</button>`).join("")}</div>
+  <div class="kpis">
+    <div class="kpi"><span>Pessoas no site</span><b>${fmtN(site)}</b></div>
+    <div class="kpi"><span>Aberturas de casas</span><b>${fmtN(casas)}</b></div>
+    <div class="kpi"><span>Pediram visita</span><b>${fmtN(visitas)}</b><small>${casas?Math.round(visitas*100/casas)+"% de quem abriu uma casa":""}</small></div>
+  </div>
+  <section class="panel"><h2>Pessoas no site por dia</h2>
+    <div class="dias14" role="img" aria-label="Pessoas no site nos últimos 14 dias">${dias.map(d=>`<div class="dcol" title="${dBR(d.k)}: ${d.n} pessoas"><span class="dv">${d.n||""}</span><i style="height:${Math.round(d.n*100/dmax)}%"></i><span class="dl">${d.d.getDate()}</span></div>`).join("")}</div>
+    <p class="note">Últimos 14 dias. Cada pessoa conta uma vez por dia.</p>
+  </section>
+  <section class="panel"><h2>Acessos por casa</h2>
+    <div class="tabela"><table>
+      <thead><tr><th>Casa</th><th class="n">Abriram</th><th class="n">Pediram<br>visita</th></tr></thead>
+      <tbody>${linhas.map(l=>`<tr class="${statusDe(l.im)==="disponivel"?"":"fora"}">
+        <td><div class="tc"><b>${esc(l.im.titulo)}</b><span class="loc">${esc(l.im.id)} · ${ROT[statusDe(l.im)]}</span><span class="meter"><i style="width:${Math.round(l.casa*100/max)}%"></i></span></div></td>
+        <td class="n">${fmtN(l.casa)}</td><td class="n">${fmtN(l.visita)}</td></tr>`).join("")}</tbody>
+    </table></div>
+    <p class="note">"Abriram" = pessoas que abriram as fotos da casa. "Pediram visita" = tocaram em Marcar visita. Cada pessoa conta uma vez por dia em cada casa. Seus próprios acessos não contam.</p>
+  </section>`;
+  box.querySelectorAll(".per button").forEach(b=>b.onclick=()=>{ periodo=+b.dataset.p; abaAcessos(); });
+}
+
+function abaMarca(){
+  const c={...ADM.config}, box=$("#aba-conteudo");
+  box.innerHTML=`<section class="panel">
+    <h2>Marca e WhatsApp</h2>
+    <div class="marca-row"><div class="marca-prev" id="m-prev">${logoTag(c)}</div>
+      <div style="display:grid;gap:10px;min-width:0;flex:1 1 220px">
+        <label class="f" for="m-nome">Nome da imobiliária<input id="m-nome" maxlength="60" value="${esc(c.nome)}"></label>
+        <label class="check" for="m-mostrar"><input id="m-mostrar" type="checkbox" ${c.mostrarNome?"checked":""}>Mostrar o nome ao lado do logo</label>
+      </div></div>
+    <div class="form-acts">
+      <label class="btn ghost" for="m-file" id="m-btn" tabindex="0">Trocar logo</label><input id="m-file" type="file" accept="image/*" hidden>
+    </div>
+    <label class="f" for="m-wa">WhatsApp que recebe os pedidos de visita<input id="m-wa" inputmode="tel" value="${esc(fmtTel(c.whatsapp))}"></label>
+    <p class="err" id="m-err" hidden></p>
+    <button class="btn primary" type="button" id="m-salvar">Salvar</button>
+  </section>`;
+  $("#m-btn").onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("#m-file").click(); } };
+  $("#m-file").onchange=async e=>{
+    const file=e.target.files[0]; e.target.value=""; if(!file) return;
+    $("#m-btn").textContent="Enviando…"; $("#m-salvar").disabled=true;
+    try{ c.logo=await enviarImagem(file,600,"image/png"); $("#m-prev").innerHTML=logoTag(c); toast("Logo carregado. Toque em Salvar."); }
+    catch(err){ toast(err.message); }
+    $("#m-btn").textContent="Trocar logo"; $("#m-salvar").disabled=false;
+  };
+  $("#m-salvar").onclick=async()=>{
+    c.nome=$("#m-nome").value.trim(); c.mostrarNome=$("#m-mostrar").checked; c.whatsapp=waNum($("#m-wa").value);
+    if(c.whatsapp.length<12){ $("#m-err").textContent="Digite o WhatsApp com DDD, ex.: (88) 9 9999-9999."; $("#m-err").hidden=false; return; }
+    $("#m-salvar").disabled=true; $("#m-salvar").textContent="Salvando…";
+    try{ await api("/admin/config",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(c)}); await atualizarTudo(); toast("Salvo. Os pedidos de visita vão para "+fmtTel(c.whatsapp)+"."); }
+    catch(err){ $("#m-err").textContent=err.message; $("#m-err").hidden=false; $("#m-salvar").disabled=false; $("#m-salvar").textContent="Salvar"; }
+  };
+}
+
+/* ---------- navegação ---------- */
+function rota(){
+  const h=decodeURIComponent((location.hash||"").slice(1));
+  if(h==="admin"){ mostrarView("admin"); return; }
+  if(!$("#v-admin").hidden) mostrarView("lista");
+  if(h&&carregado){
+    const im=IMOVEIS.find(i=>i.id===h);
+    if(im){ if(im.modo!==modo) setModo(im.modo); if(atual!==im||$("#overlay").hidden) abrir(im.id); }
+    else toast("Este imóvel não está mais disponível. Veja as outras opções.");
+  }
+}
+window.addEventListener("hashchange",rota);
+
+let inicial="aluguel"; try{ inicial=localStorage.getItem("st-modo")||"aluguel"; }catch(e){}
+setModo(inicial); renderMarca();
+if(SENHA) $("#btn-admin").hidden=false;
+carregarPublico().then(()=>{ registrar("site"); rota(); });
+</script>
+</body>
+</html>
