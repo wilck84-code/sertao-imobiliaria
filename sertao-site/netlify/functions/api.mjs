@@ -1,9 +1,12 @@
 // Servidor do app Sertão Imobiliária (Netlify Functions + Netlify Blobs)
 // Rotas públicas:  GET /api/imoveis · POST /api/evento · GET /api/foto/<id>
-// Rotas do administrador (cabeçalho x-senha = variável ADMIN_SENHA):
+// Rotas do administrador (cabeçalho x-senha). A senha inicial é a variável ADMIN_SENHA;
+// depois que o dono troca a senha no painel, vale a senha guardada (com hash) em "config/senha".
+//   POST /api/admin/senha
 //   GET /api/admin · POST /api/admin/imovel · DELETE /api/admin/imovel?id=
 //   POST /api/admin/config · POST /api/admin/foto
 import { getStore } from "@netlify/blobs";
+import { scryptSync, randomBytes, timingSafeEqual } from "node:crypto";
 
 export const config = { path: "/api/*" };
 
@@ -224,6 +227,7 @@ const SEED = {
 const EVENTOS = ["site", "casa", "visita"];
 const STATUS = ["disponivel", "alugado", "vendido", "pausado"];
 const MAX_FOTO = 5 * 1024 * 1024;
+const FOTO_RE = /^\/api\/foto\/[\w.-]+$/;
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -265,9 +269,13 @@ function limparImovel(b, idExistente) {
     extras: (Array.isArray(b.extras) ? b.extras : []).map((x) => t(x, 40)).filter(Boolean).slice(0, 20),
     gps: t(b.gps, 60),
     fotos: (Array.isArray(b.fotos) ? b.fotos : [])
-      .filter((f) => f && typeof f.src === "string" && /^\/api\/foto\/[\w.-]+$/.test(f.src))
+      .filter((f) => f && typeof f.src === "string" && FOTO_RE.test(f.src))
       .slice(0, 40)
-      .map((f) => ({ src: f.src, nome: t(f.nome, 40) })),
+      .map((f) => {
+        const o = { src: f.src, nome: t(f.nome, 40) };
+        if (typeof f.mini === "string" && FOTO_RE.test(f.mini)) o.mini = f.mini;
+        return o;
+      }),
   };
   if (Array.isArray(b.cor)) im.cor = b.cor.slice(0, 2).map((c) => t(c, 9));
   if (b.exemplo) im.exemplo = true;
@@ -298,6 +306,25 @@ async function lerStats(store) {
     })
   );
   return out;
+}
+
+const lerSenhaHeader = (req) => {
+  const v = req.headers.get("x-senha") || "";
+  try { return decodeURIComponent(v); } catch { return v; }
+};
+const hashSenha = (senha, sal) => scryptSync(String(senha), sal, 32);
+async function senhaConfere(store, tentativa) {
+  // ADMIN_RESETAR=sim no Netlify faz voltar a valer a senha ADMIN_SENHA (para quem esqueceu a senha)
+  const reg = process.env.ADMIN_RESETAR === "sim" ? null : await store.get("config/senha", { type: "json" });
+  if (reg && reg.hash && reg.sal) {
+    const esperado = Buffer.from(reg.hash, "hex");
+    const h = hashSenha(tentativa, Buffer.from(reg.sal, "hex"));
+    return h.length === esperado.length && timingSafeEqual(h, esperado);
+  }
+  const env = process.env.ADMIN_SENHA || "";
+  if (!env) return null; // nenhuma senha configurada
+  const a = Buffer.from(String(tentativa)), b = Buffer.from(env);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 export default async (req) => {
@@ -331,14 +358,20 @@ export default async (req) => {
       const r = await store.getWithMetadata("fotos/" + id, { type: "arrayBuffer" });
       if (!r) return new Response("Foto não encontrada", { status: 404 });
       return new Response(r.data, {
-        headers: { "content-type": r.metadata?.tipo || "image/jpeg", "cache-control": "public, max-age=31536000, immutable" },
+        headers: {
+          "content-type": r.metadata?.tipo || "image/jpeg",
+          "cache-control": "public, max-age=31536000, immutable",
+          // guarda a foto no cache do Netlify: o servidor não precisa buscá-la de novo a cada visita
+          "netlify-cdn-cache-control": "public, durable, max-age=31536000, immutable",
+        },
       });
     }
 
     if (rota === "admin" || rota.startsWith("admin/")) {
-      const senha = process.env.ADMIN_SENHA;
-      if (!senha) return erro("A senha do administrador ainda não foi configurada no Netlify (variável ADMIN_SENHA).", 503);
-      if (req.headers.get("x-senha") !== senha) return erro("Senha incorreta.", 401);
+      const tentativa = lerSenhaHeader(req);
+      const ok = await senhaConfere(store, tentativa);
+      if (ok === null) return erro("A senha do administrador ainda não foi configurada no Netlify (variável ADMIN_SENHA).", 503);
+      if (!ok) { await new Promise((r) => setTimeout(r, 700)); return erro("Senha incorreta.", 401); }
       const d = await lerDados(store);
 
       if (rota === "admin" && m === "GET") {
@@ -364,7 +397,7 @@ export default async (req) => {
         d.imoveis = d.imoveis.filter((i) => i.id !== id);
         await store.setJSON("dados", d);
         await Promise.all([
-          ...(im.fotos || []).map((f) => store.delete("fotos/" + f.src.split("/").pop())),
+          ...(im.fotos || []).flatMap((f) => [f.src, f.mini].filter(Boolean)).map((u) => store.delete("fotos/" + u.split("/").pop())),
           store.delete("stats/" + id),
         ]);
         return json({ ok: true });
@@ -378,6 +411,17 @@ export default async (req) => {
         d.config = { nome: String(b.nome || "").trim().slice(0, 60) || "Sertão Imobiliária", whatsapp: wa, logo, mostrarNome: !!b.mostrarNome };
         await store.setJSON("dados", d);
         return json({ ok: true, config: d.config });
+      }
+
+      if (rota === "admin/senha" && m === "POST") {
+        const b = await req.json().catch(() => ({}));
+        if (!(await senhaConfere(store, String(b.atual || "")))) { await new Promise((r) => setTimeout(r, 700)); return erro("A senha atual está errada.", 401); }
+        const nova = String(b.nova || "");
+        if (nova.length < 6) return erro("A nova senha precisa ter pelo menos 6 caracteres.");
+        if (nova.length > 100) return erro("A nova senha é longa demais.");
+        const sal = randomBytes(16);
+        await store.setJSON("config/senha", { sal: sal.toString("hex"), hash: hashSenha(nova, sal).toString("hex"), em: new Date().toISOString() });
+        return json({ ok: true });
       }
 
       if (rota === "admin/foto" && m === "POST") {

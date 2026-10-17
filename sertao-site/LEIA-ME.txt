@@ -28,23 +28,33 @@ página, sem o servidor, e o painel e o contador não funcionam.
 
 COMO USAR
 - Site dos clientes: https://sertaoimobiliaria.netlify.app
-- Painel do corretor: https://sertaoimobiliaria.netlify.app/#admin
-  (entre com a senha ADMIN_SENHA)
+- Painel do corretor: https://sertaoimobiliaria.netlify.app/admin
+  (a primeira senha é a ADMIN_SENHA; depois troque na aba "Senha")
 - No painel:
   Imóveis ........ cadastrar, editar, fotos, marcar alugado/vendido,
                    anunciar de novo, copiar link de cada casa
   Acessos ........ pessoas no site, quantas abriram cada casa e quantas
                    tocaram em "Marcar visita" (7 dias, 30 dias, total)
   Marca e WhatsApp  nome, logo e número que recebe os pedidos
+  Senha .......... trocar a senha do painel quando quiser
 - PRIMEIRA COISA: em "Marca e WhatsApp", coloque o seu número.
 - Os 8 imóveis marcados "Exemplo" podem ser apagados.
 
 COLOCAR O APP NA TELA DO CELULAR
 - Android (Chrome): abra o site > menu ⋮ > "Adicionar à tela inicial".
 - iPhone (Safari): abra o site > botão Compartilhar > "Adicionar à Tela de Início".
-- No app instalado, o corretor entra no painel pelo botão "Painel" no topo
-  (aparece depois do primeiro login em /#admin).
+- Painel no celular: abra .../admin e adicione à tela inicial. Fica um ícone
+  separado, "Sertão Painel", que abre direto no painel.
 
 Como a contagem funciona
 - Cada pessoa conta uma vez por dia em cada casa.
 - Os acessos do próprio corretor (aparelho que entrou no painel) não contam.
+
+ESQUECI A SENHA
+1. No Netlify: Configuração do projeto > Environment variables.
+2. Crie a variável ADMIN_RESETAR com o valor: sim
+   (e confira se ADMIN_SENHA tem uma senha que você sabe).
+3. Deploys > Trigger deploy > Deploy project.
+4. Entre no painel com a ADMIN_SENHA e troque a senha na aba "Senha".
+5. Apague a variável ADMIN_RESETAR e publique de novo (Trigger deploy).
+   Enquanto ADMIN_RESETAR existir, a senha trocada no painel não vale.

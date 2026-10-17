@@ -12,6 +12,15 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-title" content="Sertão">
+<script>
+/* Em /admin o app instalado abre direto no painel, com nome e ícone próprios */
+if(/^\/admin\/?$/.test(location.pathname)){
+  document.querySelector('link[rel="manifest"]').href="/manifest-admin.webmanifest";
+  document.querySelector('meta[name="apple-mobile-web-app-title"]').content="Sertão Painel";
+  document.querySelector('link[rel="apple-touch-icon"]').href="/apple-touch-icon-admin.png";
+  document.querySelector('link[rel="icon"]').href="/icon-admin-192.png";
+}
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -166,6 +175,7 @@ textarea{resize:vertical}
 .foto img{width:100%;height:100%;object-fit:cover;display:block}
 .foto .capa{position:absolute;top:6px;left:6px;font:700 10px var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:2px 6px;border-radius:5px}
 .foto .ld{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;color:var(--muted)}
+.foto .kb{position:absolute;bottom:6px;right:6px;font:700 10px var(--body);background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:5px;font-variant-numeric:tabular-nums}
 .foto input{border:0;border-top:1px solid var(--line);border-radius:0;font-size:13px;padding:7px 8px}
 .foto .acts{display:flex;border-top:1px solid var(--line)}
 .foto .acts button{flex:1;border:0;background:var(--surface);color:var(--ink);font:600 13px var(--body);padding:7px 0;cursor:pointer}
@@ -229,6 +239,7 @@ textarea{resize:vertical}
 <script>
 "use strict";
 const API = "/api";
+const PAINEL = /^\/admin\/?$/.test(location.pathname); // aberto pelo endereço do painel
 let CFG = { nome: "Sertão Imobiliária", whatsapp: "", logo: "/logo.png", mostrarNome: false };
 let IMOVEIS = [];
 const TIPOS = ["Casa","Apartamento","Casa duplex","Kitnet","Chácara","Terreno","Sala comercial","Ponto comercial"];
@@ -283,7 +294,7 @@ const linkVisita = im => waLink(CFG.whatsapp, msgVisita(im));
 
 /* Contador: cada pessoa conta uma vez por dia em cada casa */
 function registrar(tipo,id){
-  if(location.hash==="#admin"||ls.get("st-senha")) return; // não conta o próprio corretor
+  if(PAINEL||location.hash==="#admin"||ls.get("st-senha")) return; // não conta o próprio corretor
   const k=`st-ev-${tipo}-${id||"_"}-${hojeISO()}`;
   if(ls.get(k)) return; ls.set(k,1);
   try{ fetch(API+"/evento",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({tipo,id}),keepalive:true}).catch(()=>{}); }catch(e){}
@@ -332,8 +343,12 @@ function desenho(im,k){
     <rect x="240" y="40" width="110" height="230" fill="${shade(roof,.3)}" opacity=".7"/><circle cx="330" cy="70" r="8" fill="#B9C3C9"/></svg>`;
 }
 function fotosDe(im){
-  if(im.fotos&&im.fotos.length) return im.fotos.map((f,i)=>({html:`<img src="${esc(f.src)}" alt="${esc(f.nome||im.titulo)}" ${i?'loading="lazy"':""}>`, nome:f.nome||("Foto "+(i+1))}));
-  return COMODOS.map((c,i)=>({html:desenho(im,i), nome:c+" (ilustração)"}));
+  // html = foto média (galeria) · mini = miniatura leve (lista, cartões, miniaturas)
+  if(im.fotos&&im.fotos.length) return im.fotos.map((f,i)=>({
+    html:`<img src="${esc(f.src)}" alt="${esc(f.nome||im.titulo)}" decoding="async">`,
+    mini:`<img src="${esc(f.mini||f.src)}" alt="${esc(f.nome||im.titulo)}" loading="lazy" decoding="async">`,
+    nome:f.nome||("Foto "+(i+1))}));
+  return COMODOS.map((c,i)=>{ const h=desenho(im,i); return {html:h, mini:h, nome:c+" (ilustração)"}; });
 }
 
 /* ---------- estrutura ---------- */
@@ -367,7 +382,7 @@ $("#app").innerHTML = `
 function renderMarca(){
   $("#logo").innerHTML=logoTag(CFG)+(CFG.mostrarNome?`<span>${esc(CFG.nome)}</span>`:"");
   $("#rodape").textContent=`${CFG.nome}${CFG.whatsapp?" · WhatsApp "+fmtTel(CFG.whatsapp):""}`;
-  document.title=CFG.nome;
+  document.title=PAINEL?"Painel · "+CFG.nome:CFG.nome;
 }
 
 /* ---------- lista ---------- */
@@ -386,7 +401,7 @@ function render(){
   $("#grid").innerHTML=l.length?l.map(im=>{ const fs=fotosDe(im); return `
    <article class="card">
     <button class="card-open" data-id="${esc(im.id)}" aria-label="Ver fotos de ${esc(im.titulo)}">
-     <div class="ph">${fs[0].html}<span class="tag">${esc(im.tipo)}</span><span class="nphotos">${fs.length} fotos</span></div>
+     <div class="ph">${fs[0].mini}<span class="tag">${esc(im.tipo)}</span><span class="nphotos">${fs.length} fotos</span></div>
      <div class="cbody">
       <div class="price">${preco(im)}</div>
       <div class="ttl">${esc(im.titulo)}</div>
@@ -402,7 +417,7 @@ function setModo(m){
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
   $("#headline").textContent=m==="aluguel"?"Casas para alugar":"Casas à venda";
   fillBairros(); render();
-  if(!$("#v-admin").hidden){ location.hash=""; }
+  if(!$("#v-admin").hidden){ if(location.hash==="#admin") location.hash=""; else mostrarView("lista"); }
   try{localStorage.setItem("st-modo",m)}catch(e){}
 }
 document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>setModo(b.dataset.mode));
@@ -434,7 +449,7 @@ function abrir(id){
     ${FS.length>1?`<button class="nav prev" id="prev" aria-label="Foto anterior">‹</button><button class="nav next" id="next" aria-label="Próxima foto">›</button>`:""}
     <button class="close" id="fechar">Fechar ✕</button>
     <span class="room" id="room"></span></div>
-   ${FS.length>1?`<div class="thumbs" id="thumbs">${FS.map((f,i)=>`<button data-i="${i}" aria-label="${esc(f.nome)}">${f.html}</button>`).join("")}</div>`:""}
+   ${FS.length>1?`<div class="thumbs" id="thumbs">${FS.map((f,i)=>`<button data-i="${i}" aria-label="${esc(f.nome)}">${f.mini}</button>`).join("")}</div>`:""}
    <div class="info">
     <div>
      <div class="code">Cód. ${esc(im.id)} · ${im.modo==="aluguel"?"Aluguel":"Venda"}</div>
@@ -497,7 +512,7 @@ function copiar(txt,btn,ok){
 /* ---------- painel do administrador (seusite/#admin) ---------- */
 let SENHA=ls.get("st-senha"), ADM=null, aba="imoveis", periodo=30, F=null, enviando=0;
 async function api(caminho,opt={}){
-  const r=await fetch(API+caminho,{...opt,headers:{...(opt.headers||{}),"x-senha":SENHA||""}});
+  const r=await fetch(API+caminho,{...opt,headers:{...(opt.headers||{}),"x-senha":encodeURIComponent(SENHA||"")}});
   let d={}; try{ d=await r.json(); }catch(e){}
   if(!r.ok){ const err=new Error(d.erro||"Erro "+r.status); err.status=r.status; throw err; }
   return d;
@@ -509,7 +524,10 @@ function mostrarView(v){
   if(v==="admin"){ fechar(); entrarAdmin(); }
   window.scrollTo(0,0);
 }
-$("#btn-admin").onclick=()=>{ location.hash=$("#v-admin").hidden?"admin":""; };
+$("#btn-admin").onclick=()=>{
+  if($("#v-admin").hidden){ if(PAINEL) mostrarView("admin"); else location.hash="admin"; }
+  else if(location.hash==="#admin") location.hash=""; else mostrarView("lista");
+};
 
 async function entrarAdmin(){
   $("#btn-admin").hidden=false;
@@ -531,10 +549,12 @@ function renderLogin(msg){
     try{ await recarregarAdm(); ls.set("st-senha",SENHA); renderAdmin(); }
     catch(err){ SENHA=null; $("#l-err").textContent=err.status===401?"Senha incorreta.":err.message; $("#l-err").hidden=false; } };
 }
-function sair(){ SENHA=null; ADM=null; ls.del("st-senha"); location.hash=""; $("#btn-admin").hidden=true; toast("Você saiu do painel."); }
+function sair(){ SENHA=null; ADM=null; ls.del("st-senha"); toast("Você saiu do painel.");
+  if(PAINEL){ renderLogin(); return; }
+  location.hash=""; $("#btn-admin").hidden=true; }
 
 function renderAdmin(){
-  const abas={imoveis:"Imóveis",acessos:"Acessos",marca:"Marca e WhatsApp"};
+  const abas={imoveis:"Imóveis",acessos:"Acessos",marca:"Marca e WhatsApp",senha:"Senha"};
   $("#v-admin").innerHTML=`
   <section class="intro"><h1>Painel do corretor</h1>
     <p>Só você vê esta área. Cadastre as casas, acompanhe quantas pessoas abriram cada uma e marque quando alugar ou vender.</p></section>
@@ -543,7 +563,7 @@ function renderAdmin(){
   <div id="aba-conteudo"></div>`;
   document.querySelectorAll(".abas [data-aba]").forEach(b=>b.onclick=()=>{ aba=b.dataset.aba; F=null; renderAdmin(); });
   $("#sair").onclick=sair;
-  ({imoveis:abaImoveis,acessos:abaAcessos,marca:abaMarca})[aba]();
+  ({imoveis:abaImoveis,acessos:abaAcessos,marca:abaMarca,senha:abaSenha})[aba]();
 }
 
 /* contagem por período */
@@ -562,7 +582,7 @@ function abaImoveis(){
   <div id="form-box"></div>
   <div class="alist">${l.length?[...l].sort((x,y)=>(statusDe(x)==="disponivel"?0:1)-(statusDe(y)==="disponivel"?0:1)).map(im=>{ const st=statusDe(im), ok=st==="disponivel", s=ADM.stats[im.id]; return `
     <div class="arow${ok?"":" fora"}">
-      <div class="th">${fotosDe(im)[0].html}</div>
+      <div class="th">${fotosDe(im)[0].mini}</div>
       <div class="m">
         <div class="t">${esc(im.titulo)} ${im.exemplo?`<span class="pill off">Exemplo</span>`:""}</div>
         <div class="loc">${esc(im.id)} · ${im.modo==="aluguel"?"Aluguel":"Venda"} · ${esc(im.bairro)} · ${brl(im.preco)}${im.modo==="aluguel"?"/mês":""}</div>
@@ -630,7 +650,7 @@ function abrirForm(id){
     <label class="f" for="i-gps">Localização GPS <span class="hint">no Google Maps, toque e segure em cima da casa e copie os números</span>
       <input id="i-gps" placeholder="-7.2131, -39.3153" value="${esc(F.gps||"")}"></label>
     <p class="note" id="i-gps-ok"></p>
-    <div class="f" style="display:grid;gap:8px;font-size:13px;font-weight:600">Fotos <span class="hint">A primeira foto é a capa. Use as setas para mudar a ordem.</span>
+    <div class="f" style="display:grid;gap:8px;font-size:13px;font-weight:600">Fotos <span class="hint">A primeira foto é a capa. Use as setas para mudar a ordem. As fotos são reduzidas automaticamente para carregar rápido.</span>
       <label class="drop" id="drop" for="i-fotos">
         <b>Adicionar fotos</b><span class="note">Toque para escolher na galeria ou arraste as fotos aqui</span>
         <input id="i-fotos" type="file" accept="image/*" multiple hidden>
@@ -678,7 +698,7 @@ function gpsInfo(){
 function renderFotos(){
   const box=$("#fotos"); if(!box) return;
   box.innerHTML=F.fotos.map((f,i)=>`<div class="foto">
-    <div class="im">${f.src?`<img src="${esc(f.src)}" alt="">`:`<span class="ld">Enviando…</span>`}${i===0&&f.src?`<span class="capa">Capa</span>`:""}</div>
+    <div class="im">${f.src?`<img src="${esc(f.mini||f.src)}" alt="">`:`<span class="ld">Otimizando…</span>`}${f.kb?`<span class="kb">${f.kb} KB</span>`:""}${i===0&&f.src?`<span class="capa">Capa</span>`:""}</div>
     <input data-n="${i}" placeholder="Nome (ex.: Sala)" value="${esc(f.nome||"")}" aria-label="Nome da foto ${i+1}" ${f.src?"":"disabled"}>
     <div class="acts"><button type="button" data-a="esq" data-i="${i}" aria-label="Mover para a esquerda" ${i===0||!f.src?"disabled":""}>‹</button><button type="button" data-a="dir" data-i="${i}" aria-label="Mover para a direita" ${i===F.fotos.length-1||!f.src?"disabled":""}>›</button><button type="button" class="danger" data-a="del" data-i="${i}" ${f.src?"":"disabled"}>Tirar</button></div>
   </div>`).join("");
@@ -688,24 +708,42 @@ function carregarImg(file){
   return new Promise((ok,erro)=>{ const u=URL.createObjectURL(file), i=new Image();
     i.onload=()=>{ ok(i); setTimeout(()=>URL.revokeObjectURL(u),1000); }; i.onerror=()=>erro(new Error("Não consegui abrir a imagem "+file.name+".")); i.src=u; });
 }
-async function enviarImagem(file,max,tipo,q){
-  const img=await carregarImg(file);
+/* Fotos: o próprio aparelho reduz e converte antes de enviar (WebP; JPG se o navegador não gerar WebP) */
+async function gerarBlob(img,max,tipo,q){
   const s=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
-  const c=document.createElement("canvas"); c.width=Math.round(img.naturalWidth*s); c.height=Math.round(img.naturalHeight*s);
-  c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-  const blob=await new Promise(r=>c.toBlob(r,tipo,q));
-  const d=await api("/admin/foto",{method:"POST",headers:{"content-type":tipo},body:blob});
+  const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(img.naturalWidth*s)); c.height=Math.max(1,Math.round(img.naturalHeight*s));
+  const ctx=c.getContext("2d");
+  if(tipo!=="image/png"){ ctx.fillStyle="#fff"; ctx.fillRect(0,0,c.width,c.height); }
+  ctx.imageSmoothingQuality="high"; ctx.drawImage(img,0,0,c.width,c.height);
+  let blob=await new Promise(r=>c.toBlob(r,tipo,q));
+  if(!blob||blob.type!==tipo) blob=await new Promise(r=>c.toBlob(r,"image/jpeg",Math.min(.8,(q||.8)+.05)));
+  if(!blob) throw new Error("Não consegui converter a imagem.");
+  return blob;
+}
+async function subirBlob(blob){
+  const d=await api("/admin/foto",{method:"POST",headers:{"content-type":blob.type},body:blob});
   return d.url;
+}
+async function enviarImagem(file,max,tipo,q){ return subirBlob(await gerarBlob(await carregarImg(file),max,tipo,q)); }
+const FOTO_MEDIA=1280, FOTO_MINI=480;
+async function enviarFotoImovel(file){
+  const img=await carregarImg(file);
+  const media=await gerarBlob(img,FOTO_MEDIA,"image/webp",.72);
+  const mini=await gerarBlob(img,FOTO_MINI,"image/webp",.62);
+  const [src,miniUrl]=await Promise.all([subirBlob(media),subirBlob(mini)]);
+  return {src, mini:miniUrl, kb:Math.round(media.size/1024), orig:file.size};
 }
 async function adicionarFotos(files){
   if(!files.length) return;
-  const alvo=F;
+  const alvo=F; let antes=0, depois=0, ok=0;
   for(const file of files){
     const slot={src:"",nome:""}; alvo.fotos.push(slot); enviando++; renderFotos();
-    try{ slot.src=await enviarImagem(file,1600,"image/jpeg",.82); }
+    try{ const r=await enviarFotoImovel(file); slot.mini=r.mini; slot.kb=r.kb; slot.src=r.src; antes+=r.orig; depois+=r.kb*1024; ok++; }
     catch(e){ alvo.fotos.splice(alvo.fotos.indexOf(slot),1); toast(e.message||"Não consegui enviar a foto."); }
     enviando--; if(F===alvo) renderFotos();
   }
+  if(ok){ const mb=b=>b>=1048576?(b/1048576).toFixed(1).replace(".",",")+" MB":Math.round(b/1024)+" KB";
+    toast(`${ok} foto(s) otimizada(s): de ${mb(antes)} para ${mb(depois)}. Toque em salvar.`); }
 }
 async function salvarForm(e){
   e.preventDefault();
@@ -778,7 +816,7 @@ function abaMarca(){
   $("#m-file").onchange=async e=>{
     const file=e.target.files[0]; e.target.value=""; if(!file) return;
     $("#m-btn").textContent="Enviando…"; $("#m-salvar").disabled=true;
-    try{ c.logo=await enviarImagem(file,600,"image/png"); $("#m-prev").innerHTML=logoTag(c); toast("Logo carregado. Toque em Salvar."); }
+    try{ c.logo=await enviarImagem(file,600,"image/png",1); $("#m-prev").innerHTML=logoTag(c); toast("Logo carregado. Toque em Salvar."); }
     catch(err){ toast(err.message); }
     $("#m-btn").textContent="Trocar logo"; $("#m-salvar").disabled=false;
   };
@@ -791,10 +829,41 @@ function abaMarca(){
   };
 }
 
+function abaSenha(){
+  const box=$("#aba-conteudo");
+  box.innerHTML=`<form class="panel login" id="fs" novalidate style="margin-top:18px">
+    <h2>Trocar senha</h2>
+    <p class="note" style="font-size:14px">A nova senha passa a valer na hora, em todos os aparelhos. Os aparelhos que já estavam no painel vão pedir a senha nova.</p>
+    <label class="f" for="s-atual">Senha atual<input id="s-atual" type="password" autocomplete="current-password"></label>
+    <label class="f" for="s-nova">Nova senha <span class="hint">mínimo 6 caracteres</span><input id="s-nova" type="password" autocomplete="new-password"></label>
+    <label class="f" for="s-conf">Repita a nova senha<input id="s-conf" type="password" autocomplete="new-password"></label>
+    <label class="check" for="s-ver"><input id="s-ver" type="checkbox">Mostrar senhas</label>
+    <p class="err" id="s-err" hidden></p>
+    <button class="btn primary" type="submit" id="s-salvar">Trocar senha</button>
+    <p class="note">Esqueceu a senha? Veja "Esqueci a senha" no arquivo LEIA-ME que veio com o app.</p>
+  </form>`;
+  $("#s-ver").onchange=()=>["#s-atual","#s-nova","#s-conf"].forEach(id=>$(id).type=$("#s-ver").checked?"text":"password");
+  $("#fs").onsubmit=async e=>{
+    e.preventDefault();
+    const atual=$("#s-atual").value, nova=$("#s-nova").value, conf=$("#s-conf").value, err=$("#s-err");
+    const falha=m=>{ err.textContent=m; err.hidden=false; };
+    if(!atual) return falha("Digite a senha atual.");
+    if(nova.length<6) return falha("A nova senha precisa ter pelo menos 6 caracteres.");
+    if(nova!==conf) return falha("As duas senhas novas não são iguais.");
+    if(nova===atual) return falha("A nova senha é igual à atual.");
+    err.hidden=true; $("#s-salvar").disabled=true; $("#s-salvar").textContent="Trocando…";
+    try{
+      await api("/admin/senha",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({atual,nova})});
+      SENHA=nova; ls.set("st-senha",nova); toast("Senha trocada. Use a nova senha da próxima vez.");
+      aba="imoveis"; renderAdmin();
+    }catch(x){ falha(x.status===401?"A senha atual está errada.":x.message); $("#s-salvar").disabled=false; $("#s-salvar").textContent="Trocar senha"; }
+  };
+}
+
 /* ---------- navegação ---------- */
 function rota(){
   const h=decodeURIComponent((location.hash||"").slice(1));
-  if(h==="admin"){ mostrarView("admin"); return; }
+  if(h==="admin"||(PAINEL&&!h)){ if($("#v-admin").hidden) mostrarView("admin"); return; }
   if(!$("#v-admin").hidden) mostrarView("lista");
   if(h&&carregado){
     const im=IMOVEIS.find(i=>i.id===h);
@@ -806,7 +875,8 @@ window.addEventListener("hashchange",rota);
 
 let inicial="aluguel"; try{ inicial=localStorage.getItem("st-modo")||"aluguel"; }catch(e){}
 setModo(inicial); renderMarca();
-if(SENHA) $("#btn-admin").hidden=false;
+if(SENHA||PAINEL) $("#btn-admin").hidden=false;
+if(PAINEL) mostrarView("admin");
 carregarPublico().then(()=>{ registrar("site"); rota(); });
 </script>
 </body>

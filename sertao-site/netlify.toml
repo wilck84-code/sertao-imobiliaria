@@ -4,3 +4,14 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# Endereço do painel do corretor (abre o mesmo app já no painel)
+[[redirects]]
+  from = "/admin"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/"
+  to = "/index.html"
+  status = 200
